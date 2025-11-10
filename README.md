@@ -1,10 +1,10 @@
-###### Milestone 1: Plan the logic and pseudocode before coding.
+###### \# **Milestone 1: Plan the logic and pseudocode before coding.
 
 ###### \# **BMP Image Steganography – KH4017CMD**
 
-###### Author: Mohamed Osama
+###### \# **Author: Mohamed Osama
 
-###### Module: KH4017CMD – Introduction to Programming
+###### \# **Module: KH4017CMD – Introduction to Programming
 
 
 
