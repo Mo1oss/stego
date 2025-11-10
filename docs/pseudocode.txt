@@ -1,0 +1,8 @@
+PROGRAM StegoBMP
+LOOP
+  SHOW menu: Hide | Extract | Exit
+  READ user choice
+  IF Hide: plan to hide message bits in image
+  IF Extract: plan to read message bits from image
+  IF Exit: stop
+END LOOP
