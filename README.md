@@ -1,6 +1,6 @@
 ###### \# **Milestone 1: Plan the logic and pseudocode before coding.
 
-###### \# **BMP Image Steganography – KH4017CMD**
+###### \# **BMP Image Steganography – KH4017CMD
 
 ###### \# **Author: Mohamed Osama
 
