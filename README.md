@@ -1,4 +1,4 @@
-###### \# BMP Image Steganography – KH4017CMD
+###### \# **BMP Image Steganography – KH4017CMD**
 
 ###### Author: Mohamed Osama
 
@@ -14,27 +14,33 @@
 
 
 
-Project Overview
+**Project Overview**
+
+
 
 This Python program hides and extracts secret messages within BMP images
 
 using the Least Significant Bit (LSB) technique.
 
-It reads the BMP header, modifies pixel data, and adds an end marker "###END###" 
+It reads the BMP header, modifies pixel data,and adds an end marker "###END###"
 
 to identify where the hidden message stops
 
 
 
-Why BMP?
+**Why BMP?**
 
-BMP images are uncompressed and have a simple structure, making them ideal for steganography.
 
-Their raw pixel data can be easily accessed and modified without distortion.
+
+BMP images are uncompressed binary files with a simple structure,
+
+making them ideal for steganography.
+
+Their raw pixel data can be directly accessed and modified without distortion.
 
 Unlike JPEG or PNG, BMP doesn’t use compression, 
 
-so changing the Least Significant Bits (LSB) of pixels doesn’t damage the image quality or file integrity.
+so changing the Least Significant Bits (LSB) of pixels 
 
-
+doesn’t affect image quality or file integrity.
 
