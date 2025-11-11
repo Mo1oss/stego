@@ -1,8 +1,54 @@
 PROGRAM StegoBMP
-LOOP
-  SHOW menu: Hide | Extract | Exit
-  READ user choice
-  IF Hide: plan to hide message bits in image
-  IF Extract: plan to read message bits from image
-  IF Exit: stop
-END LOOP
+
+
+FUNCTION MAIN()
+    LOOP FOREVER
+        DISPLAY "=== BMP Image Steganography ==="
+        DISPLAY "1. Hide message in image"
+        DISPLAY "2. Extract message from image"
+        DISPLAY "3. Exit"
+        
+        INPUT user_choice
+        
+        IF user_choice IS "1" THEN
+            CALL HIDE_MESSAGE_MENU()
+        ELSE IF user_choice IS "2" THEN
+            CALL EXTRACT_MESSAGE_MENU()
+        ELSE IF user_choice IS "3" THEN
+            DISPLAY "Exiting..."
+            BREAK LOOP
+        ELSE
+            DISPLAY "Invalid choice"
+        END IF
+        
+        INPUT continue_choice ("Continue? (y/n): ")
+        IF continue_choice IS NOT "y" THEN
+            DISPLAY "Goodbye!"
+            BREAK LOOP
+        END IF
+    END LOOP
+END FUNCTION
+
+
+
+ Program Flow
+
+MAIN PROGRAM FLOW:
+--------------
+START → Display menu → Get user choice
+→ (Hide)    → Get paths & message → HideMessage → Ask “Continue?” → (y) Loop / (n) END
+→ (Extract) → Get path → ExtractMessage → Ask “Continue?” → (y) Loop / (n) END
+→ (Exit)    → END
+
+HIDING PROCESS:
+--------------
+START → Read BMP → Add "###END###" → Convert to binary → Check capacity
+  → Hide bits in LSBs → Write BMP → Display success → END
+
+
+EXTRACTION PROCESS:
+------------------
+START → Read BMP → Extract LSBs → Convert to text → Find "###END###"
+  → Display message → END
+
+
