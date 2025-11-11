@@ -24,13 +24,18 @@ def extract_message(image_path):
     raise NotImplementedError
 
 def main():
-    """Main menu for steganography application (wire-up comes later)"""
     print("\n=== BMP Image Steganography ===")
     print("1. Hide message in image")
     print("2. Extract message in image")
     print("3. Exit")
+
     choice = input("\nEnter choice (1-3): ").strip()
-    print("WIP choice:", choice)
+    print("WIP choice:", choice) 
+
+    if choice == "3":
+        print("Exiting program...")
+        raise SystemExit
+
 
 while True:
     try:
