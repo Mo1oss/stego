@@ -1,6 +1,7 @@
 PROGRAM StegoBMP
 
 
+
 FUNCTION MAIN()
     LOOP FOREVER
         DISPLAY "=== BMP Image Steganography ==="
@@ -30,25 +31,145 @@ FUNCTION MAIN()
 END FUNCTION
 
 
+ 
 
- Program Flow
+FUNCTION READ_BMP_HEADER(filepath) -> (prefix, pixels, offset)
+    TRY
+        OPEN filepath IN BINARY READ MODE AS f
+        READ first_54_bytes FROM f
+        
+        IF first_54_bytes[0:2] IS NOT 'BM' THEN
+            RAISE ERROR "Not a valid BMP file"
+        END IF
+        
+        // Extract the offset to the pixel data (bytes 10-14)
+        offset = CONVERT_BYTES_TO_INTEGER(first_54_bytes[10:14])
+        
+        // Rewind to start and read the full prefix (header + palette)
+        SEEK f TO START
+        prefix = READ offset bytes FROM f
+        
+        // Read all remaining bytes as pixel data
+        pixels = READ ALL REMAINING bytes FROM f AS MUTABLE_BYTE_ARRAY
+        
+        CLOSE f
+        RETURN prefix, pixels, offset
+    CATCH ERROR e
+        RAISE ERROR e
+    END TRY
+END FUNCTION
 
-MAIN PROGRAM FLOW:
---------------
-START → Display menu → Get user choice
-→ (Hide)    → Get paths & message → HideMessage → Ask “Continue?” → (y) Loop / (n) END
-→ (Extract) → Get path → ExtractMessage → Ask “Continue?” → (y) Loop / (n) END
-→ (Exit)    → END
-
-HIDING PROCESS:
---------------
-START → Read BMP → Add "###END###" → Convert to binary → Check capacity
-  → Hide bits in LSBs → Write BMP → Display success → END
 
 
-EXTRACTION PROCESS:
-------------------
-START → Read BMP → Extract LSBs → Convert to text → Find "###END###"
-  → Display message → END
+
+
+
+FUNCTION WRITE_BMP(filepath, prefix, pixel_data, offset)
+    TRY
+        OPEN filepath IN BINARY WRITE MODE AS f
+        WRITE prefix TO f
+        WRITE pixel_data TO f
+        CLOSE f
+    CATCH ERROR e
+        RAISE ERROR e
+    END TRY
+END FUNCTION
+
+
+
+FUNCTION TEXT_TO_BINARY(text) -> binary_string
+    binary_string = ""
+    FOR EACH char IN text
+        ascii_value = GET_ASCII_VALUE(char)
+        // Format as 8-bit binary string (e.g., '01000001')
+        binary_representation = FORMAT_AS_8_BIT_BINARY(ascii_value)
+        binary_string = binary_string + binary_representation
+    END FOR
+    RETURN binary_string
+END FUNCTION
+
+
+
+FUNCTION BINARY_TO_TEXT(binary_string) -> text
+    text = ""
+    // Iterate through the binary string in steps of 8
+    FOR i FROM 0 TO LENGTH(binary_string) STEP 8
+        byte = SUBSTRING(binary_string, i, 8)
+        
+        IF LENGTH(byte) IS 8 THEN
+            // Convert 8-bit binary string to integer, then to character
+            char = CONVERT_BINARY_TO_CHARACTER(byte)
+            text = text + char
+        END IF
+    END FOR
+    RETURN text
+END FUNCTION
+
+
+
+FUNCTION HIDE_MESSAGE(image_path, message, output_path)
+    TRY
+        // 1. Read Image Data
+        (prefix, pixels, offset) = CALL READ_BMP_HEADER(image_path)
+        
+        // 2. Prepare Message
+        message_with_delimiter = message + "###END###"
+        binary_message = CALL TEXT_TO_BINARY(message_with_delimiter)
+        message_length = LENGTH(binary_message)
+        
+        // 3. Capacity Check
+        IF message_length > LENGTH(pixels) THEN
+            RAISE ERROR "Message too long for image capacity"
+        END IF
+        
+        // 4. Embed Message (LSB Modification)
+        FOR i FROM 0 TO message_length - 1
+            pixel_byte = pixels[i]
+            message_bit = CONVERT_TO_INTEGER(binary_message[i])
+            
+            // Clear the LSB of the pixel byte (AND with 11111110 or 0xFE)
+            cleared_pixel = pixel_byte AND 0xFE
+            
+            // Set the LSB to the message bit (OR with 0 or 1)
+            modified_pixel = cleared_pixel OR message_bit
+            
+            pixels[i] = modified_pixel
+        END FOR
+        
+        // 5. Write Output File
+        CALL WRITE_BMP(output_path, prefix, pixels, offset)
+        
+        DISPLAY "Message hidden successfully in " + output_path
+    CATCH ERROR e
+        DISPLAY "Error hiding message: " + e
+    END TRY
+END FUNCTION
+
+
+
+FUNCTION EXTRACT_MESSAGE(image_path) -> message
+    TRY
+        // 1. Read Image Data
+        (prefix, pixels, offset) = CALL READ_BMP_HEADER(image_path)
+        
+        // 2. Extract LSBs
+        binary_message = ""
+        FOR EACH pixel_byte IN pixels
+            // Extract the LSB (AND with 00000001 or 0x01)
+            lsb = pixel_byte AND 0x01;
+            binary_message = binary_message + CONVERT_TO_STRING(lsb);
+        END FOR
+        
+        // 3. Convert Binary to Text
+        text = CALL BINARY_TO_TEXT(binary_message);
+        
+        // 4. Search for Delimiter
+        delimiter = "###END###";
+        delimiter_pos = FIND_FIRST_OCCURRENCE(delimiter, text);
+        
+        IF delimiter_pos IS -1 THEN
+            DISPLAY "No hidden message found or message corrupted";
+            RETURN NULL;
+        END IF
 
 
