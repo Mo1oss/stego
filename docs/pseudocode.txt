@@ -1,5 +1,4 @@
-PROGRAM StegoBMP
-
+Pseudocode
 
 
 FUNCTION MAIN()
@@ -31,7 +30,6 @@ FUNCTION MAIN()
 END FUNCTION
 
 
- 
 
 FUNCTION READ_BMP_HEADER(filepath) -> (prefix, pixels, offset)
     TRY
@@ -62,8 +60,6 @@ END FUNCTION
 
 
 
-
-
 FUNCTION WRITE_BMP(filepath, prefix, pixel_data, offset)
     TRY
         OPEN filepath IN BINARY WRITE MODE AS f
@@ -77,6 +73,7 @@ END FUNCTION
 
 
 
+
 FUNCTION TEXT_TO_BINARY(text) -> binary_string
     binary_string = ""
     FOR EACH char IN text
@@ -87,6 +84,7 @@ FUNCTION TEXT_TO_BINARY(text) -> binary_string
     END FOR
     RETURN binary_string
 END FUNCTION
+
 
 
 
@@ -104,7 +102,6 @@ FUNCTION BINARY_TO_TEXT(binary_string) -> text
     END FOR
     RETURN text
 END FUNCTION
-
 
 
 FUNCTION HIDE_MESSAGE(image_path, message, output_path)
@@ -147,6 +144,7 @@ END FUNCTION
 
 
 
+
 FUNCTION EXTRACT_MESSAGE(image_path) -> message
     TRY
         // 1. Read Image Data
@@ -156,20 +154,82 @@ FUNCTION EXTRACT_MESSAGE(image_path) -> message
         binary_message = ""
         FOR EACH pixel_byte IN pixels
             // Extract the LSB (AND with 00000001 or 0x01)
-            lsb = pixel_byte AND 0x01;
-            binary_message = binary_message + CONVERT_TO_STRING(lsb);
+            lsb = pixel_byte AND 0x01
+            binary_message = binary_message + CONVERT_TO_STRING(lsb)
         END FOR
         
         // 3. Convert Binary to Text
-        text = CALL BINARY_TO_TEXT(binary_message);
+        text = CALL BINARY_TO_TEXT(binary_message)
         
         // 4. Search for Delimiter
-        delimiter = "###END###";
-        delimiter_pos = FIND_FIRST_OCCURRENCE(delimiter, text);
+        delimiter = "###END###"
+        delimiter_pos = FIND_FIRST_OCCURRENCE(delimiter, text)
         
         IF delimiter_pos IS -1 THEN
-            DISPLAY "No hidden message found or message corrupted";
-            RETURN NULL;
+            DISPLAY "No hidden message found or message corrupted"
+            RETURN NULL
         END IF
+        
+        // 5. Extract and Return Message
+        message = SUBSTRING(text, 0, delimiter_pos)
+        DISPLAY "Message extracted successfully: " + LENGTH(message) + " characters"
+        RETURN message
+        
+    CATCH ERROR e
+        DISPLAY "Error extracting message: " + e
+        RETURN NULL
+    END TRY
+END FUNCTION
 
 
+
+FUNCTION HIDE_MESSAGE_MENU()
+    INPUT image_path ("Enter input BMP image path: ")
+    INPUT output_path ("Enter output BMP image path: ")
+    
+    DISPLAY "Enter message to hide:"
+    DISPLAY "1. Type message"
+    DISPLAY "2. Read from file"
+    INPUT msg_choice
+    
+    IF msg_choice IS "1" THEN
+        INPUT message ("Enter your secret message: ")
+    ELSE IF msg_choice IS "2" THEN
+        INPUT file_path ("Enter file path: ")
+        TRY
+            message = READ_FILE_CONTENT(file_path)
+        CATCH ERROR e
+            DISPLAY "Error reading file: " + e
+            RETURN
+        END TRY
+    ELSE
+        DISPLAY "Invalid choice"
+        RETURN
+    END IF
+    
+    CALL HIDE_MESSAGE(image_path, message, output_path)
+END FUNCTION
+
+ 
+FUNCTION EXTRACT_MESSAGE_MENU()
+    INPUT image_path ("Enter BMP image path: ")
+    
+    message = CALL EXTRACT_MESSAGE(image_path)
+    
+    IF message IS NOT NULL THEN
+        DISPLAY "\n--- Hidden Message ---"
+        DISPLAY message
+        DISPLAY "----------------------"
+        
+        INPUT save_choice ("Save to file? (y/n): ")
+        IF save_choice IS "y" THEN
+            INPUT output_file ("Enter output file path: ")
+            TRY
+                WRITE_CONTENT_TO_FILE(output_file, message)
+                DISPLAY "Message saved to " + output_file
+            CATCH ERROR e
+                DISPLAY "Error saving file: " + e
+            END TRY
+        END IF
+    END IF
+END FUNCTION
