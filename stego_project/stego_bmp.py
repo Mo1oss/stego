@@ -1,11 +1,21 @@
-
 def read_bmp_header(filepath):
     """Return the full pre-pixel prefix (0..offset-1), the pixel bytes, and offset."""
-    raise NotImplementedError
+    with open(filepath, 'rb') as f:
+        first54 = f.read(54)
+        if first54[0:2] != b'BM':
+            raise ValueError("Not a valid BMP file")
+        offset = int.from_bytes(first54[10:14], 'little')
+        f.seek(0)
+        prefix = f.read(offset)
+        pixels = bytearray(f.read())
+    return prefix, pixels, offset
 
 def write_bmp(filepath, prefix, pixel_data, offset):
     """Write the exact original prefix (up to offset), then the modified pixels."""
-    raise NotImplementedError
+    with open(filepath, 'wb') as f:
+        f.write(prefix)
+        f.write(pixel_data)
+
 
 def text_to_binary(text):
     """Convert text to binary string"""
