@@ -47,7 +47,8 @@ def main():
         raise SystemExit
 
 
-while True:
+if __name__ == "__main__":
+  while True:
     try:
         main()
         cont = input("\nContinue? (y/n): ").strip().lower()
