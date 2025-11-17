@@ -19,11 +19,19 @@ def write_bmp(filepath, prefix, pixel_data, offset):
 
 def text_to_binary(text):
     """Convert text to binary string"""
-    raise NotImplementedError
+    binary = ''
+    for char in text:
+        binary += format(ord(char), '08b')
+    return binary
 
 def binary_to_text(binary):
     """Convert binary string to text"""
-    raise NotImplementedError
+    text = ''
+    for i in range(0, len(binary), 8):
+        byte = binary[i:i+8]
+        if len(byte) == 8:
+            text += chr(int(byte, 2))
+    return text
 
 def hide_message(image_path, message, output_path):
     """Hide message in BMP image using LSB steganography"""
