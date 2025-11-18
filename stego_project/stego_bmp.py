@@ -35,7 +35,21 @@ def binary_to_text(binary):
 
 def hide_message(image_path, message, output_path):
     """Hide message in BMP image using LSB steganography"""
-    raise NotImplementedError
+    try:
+        prefix, pixels, offset = read_bmp_header(image_path)
+        message_with_delimiter = message + "###END###"
+        binary_message = text_to_binary(message_with_delimiter)
+        message_length = len(binary_message)
+        if message_length > len(pixels):
+            raise ValueError(f"Message too long. Max {len(pixels)} bits, got {message_length}")
+        for i in range(message_length):
+            pixels[i] = (pixels[i] & 0xFE) | int(binary_message[i])
+        write_bmp(output_path, prefix, pixels, offset)
+        print(f"Message hidden successfully in {output_path}")
+        print(f"Message length: {len(message)} characters ({message_length} bits)")
+    except Exception as e:
+        print(f"Error hiding message: {e}")
+
 
 def extract_message(image_path):
     """Extract hidden message from BMP image"""
