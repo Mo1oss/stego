@@ -53,7 +53,22 @@ def hide_message(image_path, message, output_path):
 
 def extract_message(image_path):
     """Extract hidden message from BMP image"""
-    raise NotImplementedError
+    try:
+        prefix, pixels, offset = read_bmp_header(image_path)
+        binary_message = ''
+        for pixel in pixels:
+            binary_message += str(pixel & 1)
+        text = binary_to_text(binary_message)
+        delimiter_pos = text.find("###END###")
+        if delimiter_pos == -1:
+            print("No hidden message found or message corrupted")
+            return None
+        message = text[:delimiter_pos]
+        print(f"Message extracted successfully: {len(message)} characters")
+        return message
+    except Exception as e:
+        print(f"Error extracting message: {e}")
+        return None
 
 def main():
     print("\n=== BMP Image Steganography ===")
