@@ -71,17 +71,62 @@ def extract_message(image_path):
         return None
 
 def main():
+    """Main menu for steganography application"""
     print("\n=== BMP Image Steganography ===")
     print("1. Hide message in image")
     print("2. Extract message in image")
     print("3. Exit")
-
+    
     choice = input("\nEnter choice (1-3): ").strip()
-    print("WIP choice:", choice) 
-
-    if choice == "3":
-        print("Exiting program...")
-        raise SystemExit
+    
+    if choice == '1':
+        image_path = input("Enter input BMP image path: ").strip()
+        output_path = input("Enter output BMP image path: ").strip()
+        print("\nEnter message to hide:")
+        print("1. Type message")
+        print("2. Read from file")
+        msg_choice = input("Choice (1-2): ").strip()
+        
+        if msg_choice == '1':
+            message = input("Enter your secret message: ")
+        elif msg_choice == '2':
+            file_path = input("Enter file path: ").strip()
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    message = f.read()
+            except Exception as e:
+                print(f"Error reading file: {e}")
+                return
+        else:
+            print("Invalid choice")
+            return
+        
+        hide_message(image_path, message, output_path)
+        
+    elif choice == '2':
+        image_path = input("Enter BMP image path: ").strip()
+        message = extract_message(image_path)
+        
+        if message:
+            print("\n--- Hidden Message ---")
+            print(message)
+            print("----------------------")
+            
+            save = input("\nSave to file? (y/n): ").strip().lower()
+            if save == 'y':
+                output_file = input("Enter output file path: ").strip()
+                try:
+                    with open(output_file, 'w', encoding='utf-8') as f:
+                        f.write(message)
+                    print(f"Message saved to {output_file}")
+                except Exception as e:
+                    print(f"Error saving file: {e}")
+                    
+    elif choice == '3':
+        print("Exiting...")
+        return
+    else:
+        print("Invalid choice")
 
 
 if __name__ == "__main__":
