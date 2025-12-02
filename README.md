@@ -1,10 +1,10 @@
-###### \# **Milestone 1: Plan the logic and pseudocode before coding.
+###### \# \*\*Milestone 1and 2: pseudocode and coding.
 
-###### \# **BMP Image Steganography – KH4017CMD
+###### \# \*\*BMP Image Steganography –
 
-###### \# **Author: Mohamed Osama
+###### \# 
 
-###### \# **Module: KH4017CMD – Introduction to Programming
+###### \# \*\*Introduction to Programming
 
 
 
@@ -12,13 +12,55 @@
 
 
 
-This Python program hides and extracts secret messages within BMP images
+&nbsp; A Python program is built to hide and extract secret messages in BMP   
 
-using the Least Significant Bit (LSB) technique.
+&nbsp; images using only basic programming techniques. It applies the  LSB   
 
-It reads the BMP header, modifies pixel data,and adds an end marker "###END###"
+&nbsp; method, changing the lowest pixel bits so the image looks the same. The  
 
-to identify where the hidden message stops
+&nbsp; program supports 24-bit and 32-bit BMP files, embeds a message, creates a  
+
+&nbsp; modified image, and can fully extract and save the hidden text.
+
+
+
+How the Application Works
+
+&nbsp;  - Message Hiding (Encoding)
+
+&nbsp;       The program writes a message by changing the LSB of the pixel bytes.
+
+&nbsp;            
+
+&nbsp;      The details are as follows:
+
+&nbsp;         The file of BMP is opened in binary mode and it is verified for any           
+
+&nbsp;         Mistakes by its header details.
+
+&nbsp;         After that, the message is  ready to add the delimiter and 
+
+&nbsp;         Turning  it into bits. Then the pixel bytes are adjusted to RGB places.
+
+&nbsp;         At last, every single bit of the message is the LSB of the pixel byte that  
+
+&nbsp;         corresponds to it and thus the new BMP image is saved.
+
+
+
+\-  Message Extraction (Decoding)
+
+&nbsp;  - Extraction reverses the encoding steps:
+
+&nbsp;         It reads a BMP file, pixel bytes rearranged into RGB positions; the LSB bit is taken from the byte of interest           
+
+&nbsp;         and collected until the 8 bits are formed into a character, ending at the predefined ###END### delimiter. The  
+
+&nbsp;         message recovered will be returned for viewing and/or saving, excluding the delimiter.
+
+
+
+
 
 
 
@@ -32,9 +74,9 @@ making them ideal for steganography.
 
 Their raw pixel data can be directly accessed and modified without distortion.
 
-Unlike JPEG or PNG, BMP doesn’t use compression, 
+Unlike JPEG or PNG, BMP doesn’t use compression,
 
-so changing the Least Significant Bits (LSB) of pixels 
+so changing the Least Significant Bits (LSB) of pixels
 
 doesn’t affect image quality or file integrity.
 
